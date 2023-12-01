@@ -1,0 +1,3 @@
+INFO:root:N512_L5_r2_wd0.001_epochs60100: device is cpu
+INFO:root:N512_L5_r2_wd0.001_epochs60100: generating data
+INFO:root:N512_L5_r2_wd0.001_epochs60100: trained in 15774.556351661682 seconds
