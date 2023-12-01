@@ -1,0 +1,8 @@
+ Starting Job
+SLURM Info: Job name:many_layersN1024_L2_r1_wd1e-05_epochs60100
+    JOB ID: 106416
+    Host list: g008
+    CUDA_VISIBLE_DEVICES: 0
+/home/sueparkinson/miniconda3/bin/python
+INFO:root:N1024_L2_r1_wd1e-05_epochs60100: device is cpu
+INFO:root:N1024_L2_r1_wd1e-05_epochs60100: generating data
