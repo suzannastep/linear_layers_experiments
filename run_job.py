@@ -94,7 +94,7 @@ def gen_data(device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcs
     #generate data
     trainY = f(trainX).astype(np.float32)
     testY = f(testX).astype(np.float32)
-    # check GPU is enabled
+    #switch to GPU
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if verbose:
         logging.info("device: {}".format(device))
@@ -140,6 +140,9 @@ def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
     starttime = time.time()
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
 
+    #initialize everything on CPU
+    device = torch.device("cpu")
+
     #initialize model
     torch.manual_seed(initseed) #set seed for initalization
     model = Llayers(L,d,width)
@@ -148,8 +151,7 @@ def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
     if verbose:
         logging.info(f"{paramname}: generating data")
     device,trainX,trainY,testX,testY = gen_data(device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose)
-
-    #move model to device
+    #move model to GPU device
     model.to(device)
 
     #define pytorch dataloaders
