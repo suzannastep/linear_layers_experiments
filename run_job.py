@@ -53,7 +53,7 @@ def weight_decay_val(paramlist):
             sum += (weight**2).sum()
     return sum.item()
 
-def gen_data(device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcseed=42,verbose=False,ood=False):
+def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcseed=42,verbose=False,ood=False):
     """
     data generating function
     """
@@ -76,12 +76,12 @@ def gen_data(device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcs
     W = (U * Sigma) @ V.T
     A = np.random.randn(k)
     B = np.random.randn(k)
-    np.save(f"r{r}U",U.copy())
-    np.save(f"r{r}Sigma",Sigma.copy())
-    np.save(f"r{r}V",V.copy())
-    np.save(f"r{r}W",W.copy())
-    np.save(f"r{r}A",A.copy())
-    np.save(f"r{r}B",B.copy())
+    np.save(filename+f"/r{r}U",U.copy())
+    np.save(filename+f"/r{r}Sigma",Sigma.copy())
+    np.save(filename+f"/r{r}V",V.copy())
+    np.save(filename+f"/r{r}W",W.copy())
+    np.save(filename+f"/r{r}A",A.copy())
+    np.save(filename+f"/r{r}B",B.copy())
     #create functions
     def g(z): #active subspace function
         hidden_layer = (U*Sigma)@z
@@ -94,8 +94,7 @@ def gen_data(device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcs
     #generate data
     trainY = f(trainX).astype(np.float32)
     testY = f(testX).astype(np.float32)
-    #switch to GPU
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    #log device
     if verbose:
         logging.info("device: {}".format(device))
     #move data to device
@@ -108,7 +107,7 @@ def gen_data(device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcs
             trainX.shape,
             trainY.shape
         ))
-    return device,trainX,trainY,testX,testY
+    return trainX,trainY,testX,testY
 
 def Llayers(L,d,width):
     """
@@ -132,7 +131,7 @@ def Llayers(L,d,width):
 
     return nn.Sequential(*layers)
 
-def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
+def train_L_layers(filename,datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
                    trainsize=2**18,testsize=2**10,d=20,funcseed=42,datagenseed=1,
                    initseed=42,batch_size=64,width=1000,verbose=False,
                    no_wd_last_how_many_epochs=100,
@@ -140,19 +139,18 @@ def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
     starttime = time.time()
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
 
-    #initialize everything on CPU
-    device = torch.device("cpu")
+    #change device to GPU
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     #initialize model
     torch.manual_seed(initseed) #set seed for initalization
     model = Llayers(L,d,width)
+    model.to(device)
 
     #generate data and switch to GPU
     if verbose:
         logging.info(f"{paramname}: generating data")
-    device,trainX,trainY,testX,testY = gen_data(device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose)
-    #move model to GPU device
-    model.to(device)
+    trainX,trainY,testX,testY = gen_data(filename,device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose)
 
     #define pytorch dataloaders
     dataset = torch.utils.data.TensorDataset(trainX,trainY) #create your dataset
@@ -174,7 +172,7 @@ def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
         weightdecay = torch.zeros(epochs,device=device)
         learningrate = torch.zeros(epochs,device=device)
     if verbose:
-        printfreq = 100 if datasetsize > 500 else 500
+        printfreq = 1000 if datasetsize > 500 else 5000
     if verbose:
         logging.info("Time: {:.1f} Starting to Train".format(
             time.time()-starttime
@@ -252,7 +250,7 @@ if __name__ == "__main__":
     logging.basicConfig(filename=f"log/{filename}/{paramname}.out", encoding='utf-8', level=logging.INFO)
     
     #do the actual training
-    res = train_L_layers(datasetsize,L,r,weight_decay=weight_decay,epochs=epochs,
+    res = train_L_layers(filename,datasetsize,L,r,weight_decay=weight_decay,epochs=epochs,
                         scheduler=MultiStepLR,milestones=[epochs-100], gamma=0.1, verbose=True)
     model,trainmse,weightdecay,learningrate,testmse = res
     
