@@ -94,9 +94,6 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
     #generate data
     trainY = f(trainX).astype(np.float32)
     testY = f(testX).astype(np.float32)
-    #log device
-    if verbose:
-        logging.info("device: {}".format(device))
     #move data to device
     trainX = torch.from_numpy(trainX).T.to(device)
     trainY = torch.from_numpy(trainY).to(device)
@@ -139,23 +136,23 @@ def train_L_layers(filename,datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
     starttime = time.time()
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
 
-    #change device to GPU
+    # check GPU is enabled
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    logging.info(f"{paramname}: device is {device}")
 
-    #initialize model
-    torch.manual_seed(initseed) #set seed for initalization
-    model = Llayers(L,d,width)
-    model.to(device)
-
-    #generate data and switch to GPU
-    if verbose:
-        logging.info(f"{paramname}: generating data")
+    #generate data
+    logging.info(f"{paramname}: generating data")
     trainX,trainY,testX,testY = gen_data(filename,device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose)
 
     #define pytorch dataloaders
     dataset = torch.utils.data.TensorDataset(trainX,trainY) #create your dataset
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True) #create your dataloader
 
+    #initialize model
+    torch.manual_seed(initseed) #set seed for initalization
+    model = Llayers(L,d,width)
+    model.to(device)
+    
     model_parameters = filter(lambda p: p.requires_grad, model.parameters())
     num_params = sum([np.prod(p.size()) for p in model_parameters])
 
