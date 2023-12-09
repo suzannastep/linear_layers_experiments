@@ -139,10 +139,10 @@ def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
     # check GPU is enabled
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    logging.info(f"{paramname}: device is {device}")
 
     #generate data
-    logging.info(f"{paramname}: generating data")
+    if verbose:
+        logging.info(f"{paramname}: generating data")
     trainX,trainY,testX,testY = gen_data(device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose)
 
     #define pytorch dataloaders
@@ -228,7 +228,8 @@ def train_L_layers(datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
     # }
 
     # return result_dict
-    logging.info(f"{paramname}: trained in {time.time()-starttime} seconds")
+    if verbose:
+        logging.info(f"{paramname}: trained in {time.time()-starttime} seconds")
     return model,trainmse,weightdecay,learningrate,testmse
 
 if __name__ == "__main__":
@@ -257,7 +258,7 @@ if __name__ == "__main__":
     
     #do the actual training
     res = train_L_layers(datasetsize,L,r,weight_decay=weight_decay,epochs=epochs,
-                        scheduler=MultiStepLR,milestones=[epochs-100], gamma=0.1)
+                        scheduler=MultiStepLR,milestones=[epochs-100], gamma=0.1, verbose=True)
     model,trainmse,weightdecay,learningrate,testmse = res
     
     #save Results
