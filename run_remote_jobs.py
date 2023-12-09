@@ -38,10 +38,10 @@ if __name__ == "__main__":
     #parameters
     rs = [1,2]
     Ls = [2,3,4,5,6,7,8,9]
-    wds = [1e-3,1e-4,1e-5]
-    datasetsizes = [1024,2048]#[64,128,256,512]
+    wds = [1e-3,1e-3,1e-4,1e-5]
+    datasetsizes = [1024,512,256,128,64,2048]
     epochs = 60_100
-    filename = "many_layers"
+    filename = "GPUmanylayers"
     #create folder in the current working directory
     mkdir(filename)
     mkdir("log")

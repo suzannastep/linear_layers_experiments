@@ -104,6 +104,9 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
             trainX.shape,
             trainY.shape
         ))
+        logging.info("first entry of trainY {}".format(
+            trainY[0]
+        ))
     return trainX,trainY,testX,testY
 
 def Llayers(L,d,width):
@@ -257,3 +260,4 @@ if __name__ == "__main__":
     np.save(f"{filename}/{paramname}weightdecays",weightdecay.clone().detach().cpu().numpy())
     np.save(f"{filename}/{paramname}learningrates",learningrate.clone().detach().cpu().numpy())
     torch.save(model.state_dict(), f"{filename}/{paramname}model.pt")
+    

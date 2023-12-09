@@ -1,2 +1,6 @@
 *.npy
 *.pt
+*.out
+*.err
+dummy*
+test*
