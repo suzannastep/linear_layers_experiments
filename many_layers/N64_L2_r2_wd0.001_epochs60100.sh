@@ -3,8 +3,8 @@
 #SBATCH --job-name=many_layersN64_L2_r2_wd0.001_epochs60100
 #SBATCH --partition=general
 #SBATCH --gres=gpu:1
-#SBATCH --output=log/many_layersN64_L2_r2_wd0.001_epochs60100.out
-#SBATCH --error=log/many_layersN64_L2_r2_wd0.001_epochs60100.err
+#SBATCH --output=log/many_layers/N64_L2_r2_wd0.001_epochs60100.out
+#SBATCH --error=log/many_layers/N64_L2_r2_wd0.001_epochs60100.err
 echo "$date Starting Job"
 echo "SLURM Info: Job name:${SLURM_JOB_NAME}"
 echo "    JOB ID: ${SLURM_JOB_ID}"

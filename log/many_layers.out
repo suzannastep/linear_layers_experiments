@@ -1,6 +1,0 @@
- Starting Job
-SLURM Info: Job name:many_layers
-    JOB ID: 105232
-    Host list: g009
-    CUDA_VISIBLE_DEVICES: 0
-/home/sueparkinson/miniconda3/bin/python
