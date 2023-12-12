@@ -53,7 +53,7 @@ def weight_decay_val(paramlist):
             sum += (weight**2).sum()
     return sum.item()
 
-def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcseed=42,verbose=False,ood=False):
+def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d=20,funcseed=42,verbose=False,ood=False,std=0):
     """
     data generating function
     """
@@ -90,7 +90,11 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
         return A@hidden_layer
     def f(x): #teacher network
         z = V.T@x
-        return g(z)
+        logging.info(x.shape)
+        eps = std*np.random.randn(x.shape[1])
+        logging.info(eps.shape)
+        logging.info(g(z).shape)
+        return g(z) + eps
     #generate data
     trainY = f(trainX).astype(np.float32)
     testY = f(testX).astype(np.float32)
@@ -134,7 +138,7 @@ def Llayers(L,d,width):
 def train_L_layers(filename,datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
                    trainsize=2**18,testsize=2**10,d=20,funcseed=42,datagenseed=1,
                    initseed=42,batch_size=64,width=1000,verbose=False,
-                   no_wd_last_how_many_epochs=100,
+                   no_wd_last_how_many_epochs=100,std=0,
                    scheduler=None,**schedulerkwargs):
     starttime = time.time()
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
@@ -145,7 +149,7 @@ def train_L_layers(filename,datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
 
     #generate data
     logging.info(f"{paramname}: generating data")
-    trainX,trainY,testX,testY = gen_data(filename,device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose)
+    trainX,trainY,testX,testY = gen_data(filename,device,datasetsize,r,datagenseed,trainsize,testsize,d,funcseed,verbose,std=std)
 
     #define pytorch dataloaders
     dataset = torch.utils.data.TensorDataset(trainX,trainY) #create your dataset
@@ -232,6 +236,7 @@ if __name__ == "__main__":
     parser.add_argument("--datasetsize", type=int, help = "number of samples to train with")
     parser.add_argument("--L", type=int, help = "number of layers")
     parser.add_argument("--r", type=int, help = "rank of ground truth function")
+    parser.add_argument("--labelnoise", type=int, help = "standard deviation of normally distributed label noise")
     parser.add_argument("--weight_decay", type=float, help = "regularization parameter")
     parser.add_argument("--epochs", type=int, help = "number of epochs to train for")
 
@@ -241,6 +246,7 @@ if __name__ == "__main__":
     datasetsize = args.datasetsize
     L = args.L
     r = args.r
+    std = args.labelnoise
     weight_decay = args.weight_decay
     epochs = args.epochs
     filename = args.filename
@@ -251,7 +257,7 @@ if __name__ == "__main__":
     
     #do the actual training
     res = train_L_layers(filename,datasetsize,L,r,weight_decay=weight_decay,epochs=epochs,
-                        scheduler=MultiStepLR,milestones=[epochs-100], gamma=0.1, verbose=True)
+                        scheduler=MultiStepLR,milestones=[epochs-100], gamma=0.1, verbose=True,std=std)
     model,trainmse,weightdecay,learningrate,testmse = res
     
     #save Results

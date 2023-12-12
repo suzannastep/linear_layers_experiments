@@ -7,11 +7,11 @@ def mkdir(dir):
         os.mkdir(dir)
 
 # given input parameters, writes a .sh file and submits a sbatch job
-def make_sbatch(filename,datasetsize,L,r,weight_decay,epochs):
+def make_sbatch(filename,datasetsize,L,r,labelnoise,weight_decay,epochs):
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
     job_file = f"{filename}/{paramname}.sh"
-    params  = "--filename {} --datasetsize {} --L {} --r {} --weight_decay {} --epochs {}"
-    params = params.format(filename,datasetsize,L,r,weight_decay,epochs)
+    params  = "--filename {} --datasetsize {} --L {} --r {} --labelnoise {} --weight_decay {} --epochs {}"
+    params = params.format(filename,datasetsize,L,r,labelnoise,weight_decay,epochs)
     command = "python -W error::UserWarning run_job.py "
     with open(job_file,'w') as fh:
         # the .sh file header may be different depending on the cluster
@@ -39,9 +39,10 @@ if __name__ == "__main__":
     rs = [1,2]
     Ls = [2,3,4,5,6,7,8,9]
     wds = [1e-3,1e-3,1e-4,1e-5]
-    datasetsizes = [1024,512,256,128,64,2048]
+    datasetsizes = [64]#[2048,1024,512,256,128,64]
+    labelnoise = 5e-1
     epochs = 60_100
-    filename = "GPUmanylayers"
+    filename = "GPUlabelnoise"
     #create folder in the current working directory
     mkdir(filename)
     mkdir("log")
@@ -52,7 +53,7 @@ if __name__ == "__main__":
         for L in Ls:
             for r in rs:
                 for weight_decay in wds:
-                    job_file = make_sbatch(filename,datasetsize,L,r,weight_decay,epochs)
+                    job_file = make_sbatch(filename,datasetsize,L,r,labelnoise,weight_decay,epochs)
                     print("created",job_file)
                     run_sbatch(job_file)
                     print("running",job_file)
