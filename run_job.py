@@ -236,7 +236,7 @@ if __name__ == "__main__":
     parser.add_argument("--datasetsize", type=int, help = "number of samples to train with")
     parser.add_argument("--L", type=int, help = "number of layers")
     parser.add_argument("--r", type=int, help = "rank of ground truth function")
-    parser.add_argument("--labelnoise", type=int, help = "standard deviation of normally distributed label noise")
+    parser.add_argument("--labelnoise", type=float, help = "standard deviation of normally distributed label noise")
     parser.add_argument("--weight_decay", type=float, help = "regularization parameter")
     parser.add_argument("--epochs", type=int, help = "number of epochs to train for")
 
