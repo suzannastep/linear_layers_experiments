@@ -36,24 +36,26 @@ def run_sbatch(job_file):
                                                                             
 if __name__ == "__main__":
     #parameters
-    rs = #[1,2]
+    rs = [2,1]
     Ls = [2,3,4,5,6,7,8,9]
     wds = [1e-3,1e-4,1e-5]
     datasetsizes = [2048,1024,512,256,128,64]
-    labelnoise = 1
+    labelnoise = [0,0.25,0.5,1]
     epochs = 60_100
-    filename = f"GPUlabelnoise{labelnoise}"
-    #create folder in the current working directory
-    mkdir(filename)
-    mkdir("log")
-    mkdir(f"log/{filename}")
+    jobname = "new_targets"
 
     #run files
-    for datasetsize in datasetsizes:
-        for L in Ls:
-            for r in rs:
-                for weight_decay in wds:
-                    job_file = make_sbatch(filename,datasetsize,L,r,labelnoise,weight_decay,epochs)
-                    print("created",job_file)
-                    run_sbatch(job_file)
-                    print("running",job_file)
+    for r in rs:
+        for ln in labelnoise:
+            filename = jobname + f"_labelnoise{ln}"
+            #create folder in the current working directory
+            mkdir(filename)
+            mkdir("log")
+            mkdir(f"log/{filename}")
+            for datasetsize in datasetsizes:
+                for L in Ls:
+                    for weight_decay in wds:
+                        job_file = make_sbatch(filename,datasetsize,L,r,ln,weight_decay,epochs)
+                        print("created",job_file)
+                        run_sbatch(job_file)
+                        print("running",job_file)

@@ -75,7 +75,7 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
     V = ortho_group.rvs(d)[:,:r]
     W = (U * Sigma) @ V.T
     A = np.random.randn(k)
-    B = np.random.randn(k)
+    B = np.random.rand(k) - 1/2
     np.save(filename+f"/r{r}U",U.copy())
     np.save(filename+f"/r{r}Sigma",Sigma.copy())
     np.save(filename+f"/r{r}V",V.copy())
@@ -259,6 +259,8 @@ if __name__ == "__main__":
     res = train_L_layers(filename,datasetsize,L,r,weight_decay=weight_decay,epochs=epochs,
                         scheduler=MultiStepLR,milestones=[epochs-100], gamma=0.1, verbose=True,std=std)
     model,trainmse,weightdecay,learningrate,testmse = res
+
+    logging.info("received results")
     
     #save Results
     np.save(f"{filename}/{paramname}testMSE",testmse.copy())
@@ -267,3 +269,4 @@ if __name__ == "__main__":
     np.save(f"{filename}/{paramname}learningrates",learningrate.clone().detach().cpu().numpy())
     torch.save(model.state_dict(), f"{filename}/{paramname}model.pt")
     
+    logging.info("saved results")
