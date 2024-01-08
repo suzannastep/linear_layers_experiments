@@ -36,13 +36,13 @@ def run_sbatch(job_file):
                                                                             
 if __name__ == "__main__":
     #parameters
-    rs = [1,2]
+    rs = #[1,2]
     Ls = [2,3,4,5,6,7,8,9]
     wds = [1e-3,1e-4,1e-5]
     datasetsizes = [2048,1024,512,256,128,64]
-    labelnoise = 5e-1
-    epochs = 100_100
-    filename = "GPUlabelnoise_moreepochs"
+    labelnoise = 1
+    epochs = 60_100
+    filename = f"GPUlabelnoise{labelnoise}"
     #create folder in the current working directory
     mkdir(filename)
     mkdir("log")
