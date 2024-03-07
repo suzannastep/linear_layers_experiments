@@ -7,13 +7,14 @@
 
 # squeue -u $USER | grep 197 | awk '{print $1}' | xargs -n 1 scancel
 
+# useful for making sure jobs are running on GPU and aren't having any errors
 # grep -irm 1 cuda  *.out | wc -l
 # grep -irm 1 cpu  *.out | wc -l
 # ls -1 *.out | wc -l
 # cat *.err
 
 #useful printout of queue with longer printout of job name
-# squeue --format="%.18i %.9P %.30j %.8u %.8T %.10M %.9l %.6D %R" -u sueparkinson
+# squeue --format="%.10i %.9P %.75j %.8u %.8T %.10M %.9l %.6D %R" -u sueparkinson
 
 #request GPU
 # srun -p general --gres=gpu:1 --pty bash
