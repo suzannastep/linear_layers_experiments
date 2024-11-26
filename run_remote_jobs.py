@@ -36,7 +36,7 @@ def run_sbatch(job_file):
                                                                             
 if __name__ == "__main__":
     #parameters
-    rs = [2,1]
+    rs = [5]#[2,1]
     Ls = [2,3,4,5,6,7,8,9]
     wds = [1e-3,1e-4,1e-5]
     datasetsizes = [2048,1024,512,256,128,64]
