@@ -113,7 +113,7 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
         ))
     return trainX,trainY,testX,testY
 
-def Llayers(L,d,width):
+def Llayers(L,d,width,relus=False,middlelinear=False):
     """
     model class. Construct L-1 linear layers; bias terms only on last linear layer and final relu layer.
     """
@@ -123,8 +123,10 @@ def Llayers(L,d,width):
         linear_layers = [nn.Linear(d,width,bias=True)]
     if L > 2:
         linear_layers = [nn.Linear(d,width,bias=False)]
+        if relus or middlelinear: linear_layers.append(nn.ReLU())
         for l in range(L-3):
             linear_layers.append(nn.Linear(width,width,bias=False))
+            if relus: linear_layers.append(nn.ReLU())
         linear_layers.append(nn.Linear(width,width,bias=True))
 
     relu = nn.ReLU()
