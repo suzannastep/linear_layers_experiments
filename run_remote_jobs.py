@@ -42,7 +42,7 @@ if __name__ == "__main__":
     datasetsizes = [512,256,128,64]#[2048,1024,512,256,128,64]
     labelnoise = [0,0.25]#,0.5,1]
     epochs = 60_100
-    jobname = "deeprelu"
+    jobname = "middlelinear_SIM"
 
     #run files
     for r in rs:
