@@ -7,20 +7,20 @@ def mkdir(dir):
         os.mkdir(dir)
 
 # given input parameters, writes a .sh file and submits a sbatch job
-def make_sbatch(filename,datasetsize,L,r,labelnoise,weight_decay,epochs):
+def make_sbatch(code_file,out_file,datasetsize,L,r,labelnoise,weight_decay,epochs):
     paramname = f"N{datasetsize}_L{L}_r{r}_wd{weight_decay}_epochs{epochs}"
-    job_file = f"{filename}/{paramname}.sh"
+    job_file = f"{out_file}/{paramname}.sh"
     params  = "--filename {} --datasetsize {} --L {} --r {} --labelnoise {} --weight_decay {} --epochs {}"
-    params = params.format(filename,datasetsize,L,r,labelnoise,weight_decay,epochs)
-    command = "python -W error::UserWarning run_job.py "
+    params = params.format(out_file,datasetsize,L,r,labelnoise,weight_decay,epochs)
+    command = f"python -W error::UserWarning {code_file} "
     with open(job_file,'w') as fh:
         # the .sh file header may be different depending on the cluster
         fh.writelines('#!/bin/bash')
-        fh.writelines('\n\n#SBATCH --job-name={}'.format(filename+paramname))
+        fh.writelines('\n\n#SBATCH --job-name={}'.format(out_file+paramname))
         fh.writelines('\n#SBATCH --partition=general')
         fh.writelines('\n#SBATCH --gres=gpu:1')
-        fh.writelines(f'\n#SBATCH --output=log/{filename}/{paramname}.out')
-        fh.writelines(f'\n#SBATCH --error=log/{filename}/{paramname}.err')
+        fh.writelines(f'\n#SBATCH --output=log/{out_file}/{paramname}.out')
+        fh.writelines(f'\n#SBATCH --error=log/{out_file}/{paramname}.err')
         fh.writelines('\necho "$date Starting Job"')
         fh.writelines('\necho "SLURM Info: Job name:${SLURM_JOB_NAME}"')
         fh.writelines('\necho "    JOB ID: ${SLURM_JOB_ID}"')
@@ -35,6 +35,10 @@ def run_sbatch(job_file):
     os.system('sbatch {}'.format(job_file))
                                                                             
 if __name__ == "__main__":
+    code_file = '/home/sueparkinson/teacher_networks/run_job.py' #absolute path to file to run
+    output_path = '/net/projects/willettlab/sueparkinson/teacher_networks' #absolute path to where to save results
+    os.chdir(output_path)
+
     #parameters
     rs = [1]#[2,1]
     Ls = [2,3,4,5,6,7,8,9]
@@ -47,15 +51,16 @@ if __name__ == "__main__":
     #run files
     for r in rs:
         for ln in labelnoise:
-            filename = jobname + f"_labelnoise{ln}"
-            #create folder in the current working directory
-            mkdir(filename)
+            out_file = jobname + f"_labelnoise{ln}"
+            #create folder for outputs
+            mkdir(out_file)
             mkdir("log")
-            mkdir(f"log/{filename}")
+            mkdir(f"log/{out_file}")
+            #run jobs
             for datasetsize in datasetsizes:
                 for L in Ls:
                     for weight_decay in wds:
-                        job_file = make_sbatch(filename,datasetsize,L,r,ln,weight_decay,epochs)
+                        job_file = make_sbatch(code_file,out_file,datasetsize,L,r,ln,weight_decay,epochs)
                         print("created",job_file)
                         run_sbatch(job_file)
                         print("running",job_file)
