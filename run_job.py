@@ -167,7 +167,7 @@ def train_L_layers(filename,datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
 
     loss_fn = nn.MSELoss()
     paramlist = add_weight_decay(model,weight_decay)
-    optimizer = torch.optim.Adam(paramlist, lr=lr)
+    optimizer = torch.optim.SGD(paramlist, lr=lr)#torch.optim.Adam(paramlist, lr=lr)
 
     if verbose:
         logging.info(f"{paramname}: lambda = {paramlist[1]['weight_decay']}")
