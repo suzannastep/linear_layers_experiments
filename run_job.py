@@ -88,7 +88,8 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
     np.save(filename+f"/r{r}Bprime",Bprime.copy())
     #create functions
     def xprime(x):
-        return np.maximum(0,Wprime@x+Bprime)
+        Wprimex = Wprime@x
+        return np.maximum(0,Wprimex.T+Bprime).T
     def g(z): #active subspace function
         hidden_layer = (U*Sigma)@z
         hidden_layer = hidden_layer.T + B
