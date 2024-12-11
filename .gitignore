@@ -4,3 +4,4 @@
 *.err
 dummy*
 test*
+*_results
