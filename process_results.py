@@ -203,11 +203,6 @@ def process_job(r,n,L,wd,sigma,
     res["Activations"] = args.architecture
     res["Final Train MSE"] = res["Train MSE"][-1]
     res["Final Weight Decay"] = res["Weight Decay"][-1]
-
-    logging.info(f"is training loss okay?")
-    bad_training_loss = res["Final Train MSE"] >= trainMSE_threshold + sigma
-    if bad_training_loss:
-        raise ValueError(f"bad training loss for {paramname}")
     
     logging.info(f"compute MSEs")
     with torch.no_grad():

@@ -30,47 +30,60 @@ def run_sbatch(job_file):
 if __name__ == "__main__":
     path = "/net/projects/willettlab/sueparkinson/teacher_networks/"
     
-    #standard architecture
+    # #standard architecture
+    # Ls = "2 3 4 5 6 7 8 9"
+    # rs = "1 2 5"
+    # ns = "64 128 256 512 1024 2048"
+    # wds = "1e-3 1e-4 1e-5"
+    # labelnoise = "0 0.25 0.5 1"
+    # epochs = 60100
+    # job_name = "new_targets"
+    # architecture = "standard"
+
+    # job_file = make_sbatch(Ls,rs,ns,wds,labelnoise,epochs,job_name,architecture,path)
+    # print("created",job_file)
+    # run_sbatch(job_file)
+    # print("running",job_file) 
+
+    # #middlelinear
+    # Ls = "2 3 4 5 6 7 8 9"
+    # rs = "1"
+    # ns = "64 128 256 512 1024 2048"
+    # wds = "1e-3 1e-4 1e-5"
+    # labelnoise = "0 0.25"
+    # epochs = 60100
+    # job_name = "middlelinear_SIM"
+    # architecture = "middlelinear"
+
+    # job_file = make_sbatch(Ls,rs,ns,wds,labelnoise,epochs,job_name,architecture,path)
+    # print("created",job_file)
+    # run_sbatch(job_file)
+    # print("running",job_file) 
+
+    # #deeprelu
+    # Ls = "2 3 4 5 6 7 8 9"
+    # rs = "1"
+    # ns = "64 128 256 512 1024 2048"
+    # wds = "1e-3 1e-4 1e-5"
+    # labelnoise = "0 0.25"
+    # epochs = 60100
+    # job_name = "deeprelu"
+    # architecture = "relus"
+
+    # job_file = make_sbatch(Ls,rs,ns,wds,labelnoise,epochs,job_name,architecture,path)
+    # print("created",job_file)
+    # run_sbatch(job_file)
+    # print("running",job_file) 
+
+    #SGD on standard architecture
     Ls = "2 3 4 5 6 7 8 9"
-    rs = "1 2 5"
-    ns = "64 128 256 512 1024 2048"
+    rs = "1"
+    ns = "64"
     wds = "1e-3 1e-4 1e-5"
     labelnoise = "0 0.25 0.5 1"
-    epochs = 60100
-    job_name = "new_targets"
+    epochs = 100100
+    job_name = "new_targets_SGD"
     architecture = "standard"
-
-    job_file = make_sbatch(Ls,rs,ns,wds,labelnoise,epochs,job_name,architecture,path)
-    print("created",job_file)
-    run_sbatch(job_file)
-    print("running",job_file) 
-
-    #middlelinear
-    Ls = "2 3 4 5 6 7 8 9"
-    rs = "1"
-    ns = "64 128 256 512 1024 2048"
-    wds = "1e-3 1e-4 1e-5"
-    labelnoise = "0 0.25"
-    epochs = 60100
-    job_name = "middlelinear_SIM"
-    architecture = "middlelinear"
-    path = "/net/projects/willettlab/sueparkinson/teacher_networks/"
-
-    job_file = make_sbatch(Ls,rs,ns,wds,labelnoise,epochs,job_name,architecture,path)
-    print("created",job_file)
-    run_sbatch(job_file)
-    print("running",job_file) 
-
-    #deeprelu
-    Ls = "2 3 4 5 6 7 8 9"
-    rs = "1"
-    ns = "64 128 256 512 1024 2048"
-    wds = "1e-3 1e-4 1e-5"
-    labelnoise = "0 0.25"
-    epochs = 60100
-    job_name = "deeprelu"
-    architecture = "relus"
-    path = "/net/projects/willettlab/sueparkinson/teacher_networks/"
 
     job_file = make_sbatch(Ls,rs,ns,wds,labelnoise,epochs,job_name,architecture,path)
     print("created",job_file)
