@@ -78,10 +78,10 @@ if __name__ == "__main__":
     #SGD on standard architecture
     Ls = "2 3 4 5 6 7 8 9"
     rs = "1"
-    ns = "64"
+    ns = "64 128 256 512 1024 2048"
     wds = "1e-3 1e-4 1e-5"
-    labelnoise = "0 0.25 0.5 1"
-    epochs = 100100
+    labelnoise = "0 0.25"
+    epochs = 60100
     job_name = "new_targets_SGD"
     architecture = "standard"
 
@@ -90,4 +90,4 @@ if __name__ == "__main__":
     run_sbatch(job_file)
     print("running",job_file) 
 
-    #TODO specialized targets and SGD
+    #TODO specialized middlelinear targets
