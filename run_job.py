@@ -76,29 +76,30 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
     W = (U * Sigma) @ V.T
     A = np.random.randn(k)
     B = np.random.rand(k) - 1/2
-    Wprime = np.random.randn(d,d)
-    Bprime = np.random.rand(d) - 1/2
+    # Wprime = np.random.randn(d,d)
+    # Bprime = np.random.rand(d) - 1/2
     np.save(filename+f"/r{r}U",U.copy())
     np.save(filename+f"/r{r}Sigma",Sigma.copy())
     np.save(filename+f"/r{r}V",V.copy())
     np.save(filename+f"/r{r}W",W.copy())
     np.save(filename+f"/r{r}A",A.copy())
     np.save(filename+f"/r{r}B",B.copy())
-    np.save(filename+f"/r{r}Wprime",Wprime.copy())
-    np.save(filename+f"/r{r}Bprime",Bprime.copy())
+    # np.save(filename+f"/r{r}Wprime",Wprime.copy())
+    # np.save(filename+f"/r{r}Bprime",Bprime.copy())
     #create functions
-    def xprime(x):
-        Wprimex = Wprime@x
-        return np.maximum(0,Wprimex.T+Bprime).T
+    # def xprime(x):
+    #     Wprimex = Wprime@x
+    #     return np.maximum(0,Wprimex.T+Bprime).T
     def g(z): #active subspace function
         hidden_layer = (U*Sigma)@z
         hidden_layer = hidden_layer.T + B
         hidden_layer = np.maximum(0,hidden_layer).T
         return A@hidden_layer
     def f(x): #teacher network
-        z = V.T@xprime(x)
+        z = V.T@x
+        # z = V.T@xprime(x)
         logging.info(x.shape)
-        logging.info(xprime(x).shape)
+        # logging.info(xprime(x).shape)
         eps = std*np.random.randn(x.shape[1])
         logging.info(eps.shape)
         logging.info(g(z).shape)
@@ -121,7 +122,7 @@ def gen_data(filename,device,datasetsize,r,seed,trainsize=2**18,testsize=2**10,d
         ))
     return trainX,trainY,testX,testY
 
-def Llayers(L,d,width,relus=False,middlelinear=True):
+def Llayers(L,d,width,relus=False,middlelinear=False):
     """
     model class. Construct L-1 linear layers; bias terms only on last linear layer and final relu layer.
     """
@@ -175,7 +176,7 @@ def train_L_layers(filename,datasetsize,L,r,weight_decay,epochs=30_100,lr=1e-4,
 
     loss_fn = nn.MSELoss()
     paramlist = add_weight_decay(model,weight_decay)
-    optimizer = torch.optim.Adam(paramlist, lr=lr)
+    optimizer = torch.optim.SGD(paramlist, lr=lr)#torch.optim.Adam(paramlist, lr=lr)
 
     if verbose:
         logging.info(f"{paramname}: lambda = {paramlist[1]['weight_decay']}")
