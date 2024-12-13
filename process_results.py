@@ -63,15 +63,27 @@ def gen_data(device,datasetsize,r,seed,std,labelnoiseseed,trainsize=2**18,testsi
     V = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}V.npy")
     A = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}A.npy")
     B = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}B.npy")
+    if args.target == "specialized":
+        Wprime = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}Wprime.npy")
+        Bprime = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}Bprime.npy")
     #create functions
     np.random.seed(labelnoiseseed) #set seed for data generation
+    if args.target == "specialized":
+        def xprime(x):
+            Wprimex = Wprime@x
+            return np.maximum(0,Wprimex.T+Bprime).T
     def g(z): #active subspace function
         hidden_layer = (U*Sigma)@z
         hidden_layer = hidden_layer.T + B
         hidden_layer = np.maximum(0,hidden_layer).T
         return A@hidden_layer
     def f(x): #teacher network
-        z = V.T@x    
+        if args.target == "specialized":
+            z = V.T@x    
+        elif args.target == "SMIM":
+            z = V.T@xprime(x)
+        else:
+            raise ValueError(f"{args.target} must be one of SMIM or specialized")
         eps = std*np.random.randn(x.shape[1])    
         return g(z) + eps
     #generate data
@@ -262,6 +274,7 @@ if __name__ == "__main__":
     parser.add_argument("--job_name",type=str, help = "name of job")
     parser.add_argument("--architecture",type=str, help = "network achitecture")
     parser.add_argument("--path",type=str, help = "path to output of job")
+    parser.add_argument("--target",type=str, help = "type of target function used for training.")
     args = parser.parse_args()
     if not args.architecture in {"standard","relus","middlelinear"}:
         raise ValueError("architecture must be one of standard,relus,middlelinear")
