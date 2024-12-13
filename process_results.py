@@ -214,8 +214,8 @@ def process_job(r,n,L,wd,sigma,
             squared_err = squared_err.cpu().numpy()
             res[f"{title} Squared Errors"] = squared_err
             mse = nn.functional.mse_loss(predY[:,0],dataY[r,sigma]).item()
-            res[f"{title} Generalization"] = mse
-            assert np.isclose(res[f"{title} Generalization"],np.mean(squared_err))
+            res[f"{title} MSE"] = mse
+            assert np.isclose(res[f"{title} MSE"],np.mean(squared_err))
             res[f"{title} SEM"] = sem(squared_err)
             res[f"{title} STD of Squared Errors"] = np.std(squared_err)
             if sigma > 0:

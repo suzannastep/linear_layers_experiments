@@ -43,10 +43,10 @@ if __name__ == "__main__":
     rs = [1]#[1,2,5]
     Ls = [2,3,4,5,6,7,8,9]
     wds = [1e-3,1e-4,1e-5]
-    datasetsizes = [64,1024,2048]#[128,256,512]#,1024,2048]#[2048,1024,512,256,128,64]
+    datasetsizes = [128,256,512]#[64,1024,2048]#[128,256,512]#,1024,2048]#[2048,1024,512,256,128,64]
     labelnoise = [0,0.25]#,0.5,1]
-    epochs = 60_100
-    jobname = "new_targets_SGD"
+    epochs = 100_100
+    jobname = "new_targets_SGD_more_epochs"
 
     #run files
     for r in rs:
