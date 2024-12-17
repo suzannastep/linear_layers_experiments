@@ -79,15 +79,14 @@ def gen_data(device,datasetsize,r,seed,std,labelnoiseseed,trainsize=2**18,testsi
         hidden_layer = np.maximum(0,hidden_layer).T
         return A@hidden_layer
     def f(x): #teacher network
-        if args.target == "specialized":
+        if args.target == "SMIM":
             z = V.T@x    
-        elif args.target == "SMIM":
+        elif args.target == "specialized":
             z = V.T@xprime(x)
         else:
             raise ValueError(f"{args.target} must be one of SMIM or specialized")
         eps = std*np.random.randn(x.shape[1])    
         return g(z) + eps
-    logging.info(f(torch.zeros(d)))
     #generate data
     trainY = f(trainX).astype(np.float32)
     testY = f(testX).astype(np.float32)
