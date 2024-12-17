@@ -64,6 +64,7 @@ def gen_data(device,datasetsize,r,seed,std,labelnoiseseed,trainsize=2**18,testsi
     A = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}A.npy")
     B = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}B.npy")
     if args.target == "specialized":
+        logging.info("SPECIALIZED TARGET")
         Wprime = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}Wprime.npy")
         Bprime = np.load(args.path + args.job_name+f"_labelnoise{std}/r{r}Bprime.npy")
     #create functions
@@ -86,6 +87,7 @@ def gen_data(device,datasetsize,r,seed,std,labelnoiseseed,trainsize=2**18,testsi
             raise ValueError(f"{args.target} must be one of SMIM or specialized")
         eps = std*np.random.randn(x.shape[1])    
         return g(z) + eps
+    logging.info(f(torch.zeros(d)))
     #generate data
     trainY = f(trainX).astype(np.float32)
     testY = f(testX).astype(np.float32)
